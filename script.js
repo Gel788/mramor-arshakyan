@@ -58,6 +58,42 @@
     });
   });
 
+  // Gallery lightbox — открытие фото по клику
+  var lightbox = document.getElementById('lightbox');
+  var lightboxImg = lightbox && lightbox.querySelector('.lightbox-img');
+  var lightboxBackdrop = lightbox && lightbox.querySelector('.lightbox-backdrop');
+  var lightboxClose = lightbox && lightbox.querySelector('.lightbox-close');
+
+  function openLightbox(src) {
+    if (!lightbox || !lightboxImg) return;
+    lightboxImg.src = src;
+    lightbox.setAttribute('aria-hidden', 'false');
+    lightbox.classList.add('lightbox--open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeLightbox() {
+    if (!lightbox) return;
+    lightbox.setAttribute('aria-hidden', 'true');
+    lightbox.classList.remove('lightbox--open');
+    document.body.style.overflow = '';
+  }
+
+  if (lightbox) {
+    if (lightboxBackdrop) lightboxBackdrop.addEventListener('click', closeLightbox);
+    if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && lightbox.classList.contains('lightbox--open')) closeLightbox();
+    });
+  }
+
+  document.querySelectorAll('.gallery-item[data-src]').forEach(function (item) {
+    item.addEventListener('click', function () {
+      var src = this.getAttribute('data-src');
+      if (src) openLightbox(src);
+    });
+  });
+
   // Smooth scroll for anchor links
   document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
     anchor.addEventListener('click', function (e) {
