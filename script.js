@@ -58,15 +58,35 @@
     });
   });
 
-  // Gallery lightbox — открытие фото по клику
+  // Gallery lightbox — все фото, листание вперёд/назад
   var lightbox = document.getElementById('lightbox');
   var lightboxImg = lightbox && lightbox.querySelector('.lightbox-img');
   var lightboxBackdrop = lightbox && lightbox.querySelector('.lightbox-backdrop');
   var lightboxClose = lightbox && lightbox.querySelector('.lightbox-close');
+  var lightboxPrev = lightbox && lightbox.querySelector('.lightbox-prev');
+  var lightboxNext = lightbox && lightbox.querySelector('.lightbox-next');
+  var lightboxCounter = document.getElementById('lightbox-counter');
 
-  function openLightbox(src) {
+  var gallerySrcs = [];
+  document.querySelectorAll('.gallery-item[data-src]').forEach(function (item) {
+    var src = item.getAttribute('data-src');
+    if (src) gallerySrcs.push(src);
+  });
+
+  var lightboxIndex = 0;
+
+  function showLightboxImage(index) {
+    if (!lightboxImg || !gallerySrcs.length) return;
+    lightboxIndex = (index + gallerySrcs.length) % gallerySrcs.length;
+    lightboxImg.src = gallerySrcs[lightboxIndex];
+    if (lightboxCounter) lightboxCounter.textContent = (lightboxIndex + 1) + ' / ' + gallerySrcs.length;
+  }
+
+  function openLightbox(srcOrIndex) {
     if (!lightbox || !lightboxImg) return;
-    lightboxImg.src = src;
+    var idx = typeof srcOrIndex === 'number' ? srcOrIndex : gallerySrcs.indexOf(srcOrIndex);
+    if (idx < 0) idx = 0;
+    showLightboxImage(idx);
     lightbox.setAttribute('aria-hidden', 'false');
     lightbox.classList.add('lightbox--open');
     document.body.style.overflow = 'hidden';
@@ -79,11 +99,24 @@
     document.body.style.overflow = '';
   }
 
+  function lightboxPrevClick() {
+    if (gallerySrcs.length) showLightboxImage(lightboxIndex - 1);
+  }
+
+  function lightboxNextClick() {
+    if (gallerySrcs.length) showLightboxImage(lightboxIndex + 1);
+  }
+
   if (lightbox) {
     if (lightboxBackdrop) lightboxBackdrop.addEventListener('click', closeLightbox);
     if (lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
+    if (lightboxPrev) lightboxPrev.addEventListener('click', function (e) { e.stopPropagation(); lightboxPrevClick(); });
+    if (lightboxNext) lightboxNext.addEventListener('click', function (e) { e.stopPropagation(); lightboxNextClick(); });
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && lightbox.classList.contains('lightbox--open')) closeLightbox();
+      if (!lightbox.classList.contains('lightbox--open')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') lightboxPrevClick();
+      if (e.key === 'ArrowRight') lightboxNextClick();
     });
   }
 

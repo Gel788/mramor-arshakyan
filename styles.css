@@ -743,3 +743,41 @@ body {
   color: var(--gold);
   border-color: var(--gold-dim);
 }
+
+.lightbox-prev,
+.lightbox-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  width: 52px;
+  height: 52px;
+  padding: 0;
+  font-size: 2rem;
+  line-height: 1;
+  color: var(--text);
+  background: rgba(235, 232, 227, 0.1);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+.lightbox-prev:hover,
+.lightbox-next:hover {
+  background: var(--gold-glow);
+  color: var(--gold);
+  border-color: var(--gold-dim);
+}
+.lightbox-prev { left: 1.5rem; }
+.lightbox-next { right: 1.5rem; }
+
+.lightbox-counter {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
